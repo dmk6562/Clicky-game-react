@@ -1,0 +1,11 @@
+#jumbo {
+    text-align: center;
+    background-color: blueviolet;
+    color: white;
+    height: 240px;
+    border-radius: 0;
+}
+
+#jumbo h1 {
+    line-height: 60px;
+}

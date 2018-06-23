@@ -1,43 +1,124 @@
+// import all dependencies
 import React, { Component } from "react";
-import FriendCard from "./components/FriendCard";
-import Wrapper from "./components/Wrapper";
-import Title from "./components/Title";
-import friends from "./friends.json";
+import Header from './components/Header/Header.js'
+import Card from "./components/Card/Card";
+import Footer from './components/Footer/Footer'
+import Friends from "./friends.json";
 import "./App.css";
 
+// sets variables for initial page load
+let score = 0;
+let topScore = 0;
+let message = "Click an image to begin!";
+
+// needs to be class componenet because of private internal state
 class App extends Component {
-  // Setting this.state.friends to the friends json array
-  state = {
-    friends
-  };
 
-  removeFriend = id => {
-    // Filter this.state.friends for friends with an id not equal to the id being removed
-    const friends = this.state.friends.filter(friend => friend.id !== id);
-    // Set this.state.friends equal to the new friends array
-    this.setState({ friends });
-  };
+    // set state
+    state = {
+        Friends,
+        score,
+        topScore,
+        message
+    };
 
-  // Map over this.state.friends and render a FriendCard component for each friend object
-  render() {
-    return (
-      <Wrapper>
-        <Title>Friends List</Title>
-        {this.state.friends.map(friend => (
-          <FriendCard
-            removeFriend={this.removeFriend}
-            id={friend.id}
-            key={friend.id}
-            name={friend.name}
-            image={friend.image}
-            occupation={friend.occupation}
-            location={friend.location}
-          />
-        ))}
-      </Wrapper>
-    );
-  }
+    setClicked = id => {
+
+        const Friends = this.state.Friends;
+
+        // creates new array with elements that match
+        const clickedMatch = Friends.filter(match => match.id === id);
+
+        // if else statements using true/false
+        if (clickedMatch[0].clicked) {
+            score = 0;
+
+            // update message
+            message = "Sorry! The Image has already been clicked on!"
+
+            // sets friends clicked to false
+            for (let i = 0; i < Friends.length; i++) {
+                Friends[i].clicked = false;
+            }
+
+            // set the new values for state
+            this.setState({ message });
+            this.setState({ score });
+            this.setState({ Friends });
+
+        } else if (score < 11) {
+
+            clickedMatch[0].clicked = true;
+
+            // increment score
+            score++;
+
+            // update message
+            message = "Awesome! Play on!";
+
+            // sets new top score
+            if (score > topScore) {
+                topScore = score;
+                this.setState({ topScore });
+            }
+
+            // returns random image
+            Friends.sort(function (a, b) { return 0.5 - Math.random() });
+
+            // setState function
+            this.setState({ Friends });
+            this.setState({ score });
+            this.setState({ message });
+
+        } else {
+
+            clickedMatch[0].clicked = true;
+
+            score = 0;
+            topScore = 12;
+
+            // update message
+            message = "You are doing great.";
+
+            this.setState({ topScore });
+
+            // sets friends clicked to false
+            for (let i = 0; i < Friends.length; i++) {
+                Friends[i].clicked = false;
+            }
+
+            // returns random image
+            Friends.sort(function (a, b) { return 0.5 - Math.random() });
+
+            // setState function
+            this.setState({ Friends });
+            this.setState({ score });
+            this.setState({ message });
+
+        }
+    };
+
+    render() {
+        return (
+            <div>
+                <Header message={this.state.message} score={this.state.score} topScore={this.state.topScore} />
+
+                <div className='cardArea'>
+                    {this.state.Friends.map(char => (
+                        <Card
+                            setClicked={this.setClicked}
+                            id={char.id}
+                            key={char.id}
+                            name={char.name}
+                            image={char.image}
+                        />
+                    ))}
+                </div>
+
+                <Footer />
+            </div>
+        );
+    }
 }
 
 export default App;
-
